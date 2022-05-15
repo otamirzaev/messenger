@@ -36,7 +36,6 @@ BOOST_AUTO_TEST_CASE(myTestCase4) {
 }
 
 BOOST_AUTO_TEST_CASE(myTestCase5) {
-
 	std::cout << "Test case 5 (Modified message)\n";
 	std::string name = "fakhriyor";
 	std::string message = "hello";
@@ -49,7 +48,6 @@ BOOST_AUTO_TEST_CASE(myTestCase5) {
 }
 
 BOOST_AUTO_TEST_CASE(myTestCase6) {
-
 	std::cout << "Test case 6 (Modified name)\n";
 	std::string name = "fakhriyor";
 	std::string message = "hello";
