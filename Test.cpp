@@ -4,28 +4,12 @@
 #include "messenger.h"
 
 BOOST_AUTO_TEST_CASE(myTestCase1) {
-
 	std::cout << "Test case 1 (Long message)\n";
 	std::string name    = "fakhriyor";
 	std::string message = "aaaaaaaaaaaaaaabbbbbbbbbbbbbbbbccccccccccccccddddddddddddddddddddddeeeeeeeeeeeeeeeeeeeeeee";
 	std::vector<uint8_t> testVec = messenger::make_buff(messenger::msg_t(name, message));
 	messenger::msg_t     retObj  = messenger::parse_buff(testVec);
 	BOOST_CHECK(retObj.text == message);
-
-	// std::vector<uint8_t> testVec = messenger::make_buff(messenger::msg_t("fakhryor", "hello"));
-
-	//bool var = true;
-	/*BOOST_CHECK(var);
-	BOOST_TEST(1 == 1);
-	BOOST_TEST(true);*/
-
-	//BOOST_WARN(sizeof(int) == sizeof(long));
-
-	//int i = 2;
-	//int j = 1;
-	//BOOST_CHECK(i == j);     // reports the fact of failure only: "check i == j failed"
-	//BOOST_CHECK_EQUAL(i, j); // reports "check i == j failed [2 != 1]"
-
 }
 
 BOOST_AUTO_TEST_CASE(myTestCase2) {
@@ -87,13 +71,3 @@ BOOST_AUTO_TEST_CASE(myTestCase7) {
 	std::vector<uint8_t> testVec = messenger::make_buff(messenger::msg_t(name, message));
 	messenger::msg_t     retObj = messenger::parse_buff(modifiedFlag);
 }
-
-
-//BOOST_AUTO_TEST_SUITE(mytests)
-//BOOST_AUTO_TEST_CASE(testPlus) {
-//	BOOST_CHECK_EQUAL(2 + 2, 4);
-//}
-//BOOST_AUTO_TEST_CASE(testMult) {
-//	BOOST_CHECK_EQUAL(2 * 2, 4);
-//}
-//BOOST_AUTO_TEST_SUITE_END()
