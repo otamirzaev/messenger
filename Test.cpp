@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(myTestCase5) {
 	std::string name = "fakhriyor";
 	std::string message = "hello";
 	messenger::make_buff(messenger::msg_t(name, message));
-	//												 'f'   'a'   'k'    'h'   'r'   'i'   'y'   'o'   'r'   'a'   'e'   'l'   'l'  'o'
+	//						 'f'   'a'   'k'    'h'   'r'   'i'   'y'   'o'   'r'   'a'   'e'   'l'   'l'  'o'
 	std::vector<uint8_t> modifiedMsg = { 0xb2, 0x52, 0x66, 0x61, 0x6b, 0x68, 0x72, 0x69, 0x79, 0x6f, 0x72, 0x61, 0x65, 0x6c, 0x6c, 0x6f };
 	std::vector<uint8_t> testVec = messenger::make_buff(messenger::msg_t(name, message));
 	messenger::msg_t     retObj = messenger::parse_buff(modifiedMsg);
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(myTestCase6) {
 	std::string name = "fakhriyor";
 	std::string message = "hello";
 	messenger::make_buff(messenger::msg_t(name, message));
-	//												 'f'   'a'   'k'    'h'   'r'   'i'   'y'   'r'   'r'   'h'   'e'   'l'   'l'  'o'
+	//						  'f'   'a'   'k'    'h'   'r'   'i'   'y'   'r'   'r'   'h'   'e'   'l'   'l'  'o'
 	std::vector<uint8_t> modifiedNme = { 0xb2, 0x52, 0x66, 0x61, 0x6b, 0x68, 0x72, 0x69, 0x79, 0x72, 0x72, 0x68, 0x65, 0x6c, 0x6c, 0x6f };
 	std::vector<uint8_t> testVec = messenger::make_buff(messenger::msg_t(name, message));
 	messenger::msg_t     retObj = messenger::parse_buff(modifiedNme);
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(myTestCase7) {
 	std::string name = "fakhriyor";
 	std::string message = "hello";
 	messenger::make_buff(messenger::msg_t(name, message));
-	//									 0b111	     'f'   'a'   'k'    'h'   'r'   'i'   'y'   'o'   'r'   'h'   'e'   'l'   'l'  'o'
+	//				     0b111	   'f'   'a'   'k'    'h'   'r'   'i'   'y'   'o'   'r'   'h'   'e'   'l'   'l'  'o'
 	std::vector<uint8_t> modifiedFlag = { 0xf2, 0x52, 0x66, 0x61, 0x6b, 0x68, 0x72, 0x69, 0x79, 0x6f, 0x72, 0x68, 0x65, 0x6c, 0x6c, 0x6f };
 	std::vector<uint8_t> testVec = messenger::make_buff(messenger::msg_t(name, message));
 	messenger::msg_t     retObj = messenger::parse_buff(modifiedFlag);
