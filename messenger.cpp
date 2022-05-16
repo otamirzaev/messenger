@@ -59,8 +59,7 @@ std::vector<std::string> parse(std::vector<uint8_t> param) {
     // Check FLAG
     if (((((firstByte & 0xE0) >> 5)) & 7) != 5) {
         throw std::runtime_error("ERROR: FLAG is not set to '0b101'!");
-    }
-    else {
+    } else {
         dbg_out << "SUCCESS: FLAG is set to '0b101'!" << std::endl;
     }
 
@@ -74,8 +73,7 @@ std::vector<std::string> parse(std::vector<uint8_t> param) {
 
     if (lastBitOfFirstByte) {
         MsgLen = halfSecondByte |= 1UL << 4;
-    }
-    else {
+    } else {
         MsgLen = halfSecondByte;
     }
 
@@ -113,8 +111,7 @@ std::vector<std::string> parse(std::vector<uint8_t> param) {
     // Check CRC4 value
     if (CRC4 != iCRC4) {
         throw std::runtime_error("ERROR: CRC4 hash values not matching! Packet is corrupted!\n");
-    }
-    else {
+    } else {
         dbg_out << "SUCCESS: Packet is not modified!" << std::endl << std::endl;
     }
 
@@ -136,7 +133,6 @@ void packdata(std::string name, std::string text, std::vector<uint8_t>& buff) {
 
     if (text.length() > 15) {
         firstByte = firstByte + 1;
-
         std::bitset<8> fB2{ firstByte };
         dbg_out << "The first byte was changed: " << std::setw(10) << fB2.to_string() << std::endl;
     }
@@ -176,11 +172,9 @@ void packdata(std::string name, std::string text, std::vector<uint8_t>& buff) {
     }
 
     dbg_out << "\nBuffer size: " << buff.size() << std::endl << std::endl;
-
 }
 
 namespace messenger {
-
     std::vector<uint8_t> make_buff(const msg_t& msg) {
 
         std::string nm  = msg.name;
@@ -189,54 +183,44 @@ namespace messenger {
         dbg_out << "Initial Name ("    << nm.length()  << " chars.): " << "'" << nm  << "'\n";
         dbg_out << "Initial Message (" << txt.length() << " chars.): " << "'" << txt << "'\n\n";
 
-        try {
-
-            if (nm.empty()) {
-                throw std::length_error("Name can not be empty!\n");
-            }
-
-            if (txt.empty()) {
-                throw std::length_error("Message can not be empty!\n");
-            }
-
-            if (nm.size() > NAME_MAXLEN) {
-                throw std::length_error("Name can not be longer than NAME_MAXLEN");
-            }
-
-            int numOfPackets = 0;
-            int mod = 0;
-
-            std::vector<uint8_t> buff;
-            std::vector<std::string> vecStr;
-
-            if (txt.size() > MSG_MAXLEN) {
-                mod = txt.length() % MSG_MAXLEN;
-                numOfPackets = ((txt.length() - mod)/MSG_MAXLEN) + 1;
-
-                int j = 0;
-
-                for (int i = 0; i < numOfPackets; ++i) {
-                    vecStr.push_back(txt.substr(j, MSG_MAXLEN));
-                    j = j + MSG_MAXLEN;
-                }
-
-                for (int i = 0; i < numOfPackets; ++i) {
-                    packdata(nm, vecStr[i], buff);
-                }
-
-                return buff;
-            }
-            else {
-                packdata(nm, txt, buff);
-                return buff;
-            }
-            
-        } catch(std::exception& e) {
-            std::cout << e.what() << std::endl;
+        if (nm.empty()) {
+            throw std::length_error("Name can not be empty!\n");
         }
-       
-        std::vector<uint8_t> empty_buff;
-        return empty_buff;
+
+        if (txt.empty()) {
+            throw std::length_error("Message can not be empty!\n");
+        }
+
+        if (nm.size() > NAME_MAXLEN) {
+            throw std::length_error("Name can not be longer than NAME_MAXLEN");
+        }
+
+        int numOfPackets = 0;
+        int mod          = 0;
+
+        std::vector<uint8_t> buff;
+        std::vector<std::string> vecStr;
+
+        if (txt.size() > MSG_MAXLEN) {
+            mod = txt.length() % MSG_MAXLEN;
+            numOfPackets = ((txt.length() - mod)/MSG_MAXLEN) + 1;
+
+            int j = 0;
+
+            for (int i = 0; i < numOfPackets; ++i) {
+                vecStr.push_back(txt.substr(j, MSG_MAXLEN));
+                j = j + MSG_MAXLEN;
+            }
+
+            for (int i = 0; i < numOfPackets; ++i) {
+                packdata(nm, vecStr[i], buff);
+            }
+
+            return buff;
+        } else {
+            packdata(nm, txt, buff);
+            return buff;
+        }
     }
 
     msg_t parse_buff(std::vector<uint8_t>& buff) {
@@ -250,8 +234,8 @@ namespace messenger {
         uint8_t NmLen = (fstByte & msk) >> 1;
 
         std::string concStr = "";
-        std::vector<uint8_t> vconcStr;
         std::string retName = "";
+        std::vector<uint8_t> vconcStr;
 
         if (buff.size() > (MAX_BYTES_WITHOUT_NAME + NmLen)) {
 
@@ -262,14 +246,12 @@ namespace messenger {
             int idx = 0;
 
             for (int k = 0; k < numOfPackets; k++) {
-                
                 if (k != ((buff.size() - mod)/(MAX_BYTES_WITHOUT_NAME + NmLen))) {
                     for (int j = idx; j < (idx + (MAX_BYTES_WITHOUT_NAME + NmLen)); ++j) {
                         vecPacks[k].push_back(buff[j]);
                     }
                     idx += (MAX_BYTES_WITHOUT_NAME + NmLen);
-                }
-                else {
+                } else {
                     for (int j = idx; j < idx + mod; ++j) {
                         vecPacks[k].push_back(buff[j]);
                     }
@@ -278,40 +260,17 @@ namespace messenger {
             }
 
             for (int k = 0; k < numOfPackets; ++k) {
-
-                try {
-
-                    std::vector<std::string> nameAndMessage = parse(vecPacks[k]);
-                    retName = nameAndMessage[0];
-                    concStr.append(nameAndMessage[1]);
-
-                } catch (std::exception& a) {
-                    std::cout << a.what() << std::endl;
-                }
+                std::vector<std::string> nameAndMessage = parse(vecPacks[k]);
+                retName = nameAndMessage[0];
+                concStr.append(nameAndMessage[1]);
             }
 
             msg_t retMsg_t(retName, concStr);
             return retMsg_t;
+        } else {
+            std::vector<std::string> nameAndMessage = parse(buff);
+            msg_t retMsg_t(nameAndMessage[0], nameAndMessage[1]);
+            return retMsg_t;
         }
-        else {
-            try {
-
-                std::vector<std::string> nameAndMessage = parse(buff);
-                msg_t retMsg_t(nameAndMessage[0], nameAndMessage[1]);
-                return retMsg_t;
-
-            } catch (std::exception& a) {
-
-                std::cout << a.what() << std::endl;
-
-            }
-        }
-
-        std::string nmStr  = "";
-        std::string msgStr = "";
-        msg_t retMsg_t(nmStr, msgStr);
-        return retMsg_t;
     }
-
 }
-
