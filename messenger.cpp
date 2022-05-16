@@ -134,7 +134,6 @@ void packdata(std::string name, std::string text, std::vector<uint8_t>& buff) {
     std::bitset<8> fB1{ firstByte };
     dbg_out << "\nFirst  byte: " << std::setw(25) << fB1.to_string() << std::endl;
 
-
     if (text.length() > 15) {
         firstByte = firstByte + 1;
 
