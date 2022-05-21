@@ -125,7 +125,7 @@ std::vector<std::string> parse(std::vector<uint8_t> param) {
     return retVec;
 }
 
-void packdata(std::string& name, const std::string& text, std::vector<uint8_t>& buff) {
+void packdata(const std::string& name, const std::string& text, std::vector<uint8_t>& buff) {
 
     uint8_t firstByte = FLAG_MASK;
     firstByte = firstByte + name.length() * 2;
