@@ -1,7 +1,5 @@
 #include <iostream>
 #include <string>
-#include <stdexcept>
-#include <stdio.h>
 #include <bitset>
 #include <iomanip>
 #include <fstream>
@@ -104,7 +102,7 @@ std::vector<std::string> parse(std::vector<uint8_t> param) {
     controlledString.push_back(5);
     controlledString.push_back(NameLen);
     controlledString.push_back(MsgLen);
-    controlledString.insert(controlledString.end(), name.begin(), name.end() - 1);
+    controlledString.insert(controlledString.end(), name.begin(),    name.end()    - 1);
     controlledString.insert(controlledString.end(), message.begin(), message.end() - 1);
 
     // Calculated CRC value
@@ -117,7 +115,7 @@ std::vector<std::string> parse(std::vector<uint8_t> param) {
         dbg_out << "Packet is not modified!" << std::endl << std::endl;
     }
 
-    std::string nmStr(name.begin(), name.end());
+    std::string nmStr(name.begin(),     name.end());
     std::string msgStr(message.begin(), message.end() - 1);
     std::vector<std::string> retVec;
     retVec.push_back(nmStr);
@@ -125,7 +123,7 @@ std::vector<std::string> parse(std::vector<uint8_t> param) {
     return retVec;
 }
 
-void packdata(std::string& name, std::string text, std::vector<uint8_t>& buff) {
+void packData(const std::string_view& name, const std::string_view& text, std::vector<uint8_t>& buff) {
 
     uint8_t firstByte = FLAG_MASK;
     firstByte = firstByte + name.length() * 2;
@@ -175,20 +173,18 @@ void packdata(std::string& name, std::string text, std::vector<uint8_t>& buff) {
     dbg_out << "\nBuffer size: " << buff.size() << std::endl << std::endl;
 }
 
-void packMultStrData(std::string& name, std::string& txt, std::vector<uint8_t>& buff) {
+void packMultStrData(const std::string_view& name, const std::string_view& txt, std::vector<uint8_t>& buff) {
 
     std::vector<uint8_t> vtemp;
-
     for (int i = 0; i < txt.length(); ++i) {
-        vtemp.push_back(txt[i]);
-
+        vtemp.emplace_back(txt[i]);
         if (vtemp.size() == MSG_MAXLEN) {
-            packdata(name, std::string(vtemp.begin(), vtemp.end()), buff);
+            packData(name, std::string(vtemp.begin(), vtemp.end()), buff);
             vtemp.clear();
         }
 
         if (txt.length() - i == 1) {
-            packdata(name, std::string(vtemp.begin(), vtemp.end()), buff);
+            packData(name, std::string(vtemp.begin(), vtemp.end()), buff);
         }
     }
 }
@@ -196,32 +192,30 @@ void packMultStrData(std::string& name, std::string& txt, std::vector<uint8_t>& 
 namespace messenger {
 
     std::vector<uint8_t> make_buff(const msg_t& msg) {
-        std::string nm  = msg.name;
-        std::string txt = msg.text;
         
-        dbg_out << "Initial Name ("    << nm.length()  << " chars.): " << "'" << nm  << "'\n";
-        dbg_out << "Initial Message (" << txt.length() << " chars.): " << "'" << txt << "'\n\n";
+        dbg_out << "Initial Name ("    << msg.name.length() << " chars.): " << "'" << msg.name  << "'\n";
+        dbg_out << "Initial Message (" << msg.text.length() << " chars.): " << "'" << msg.text << "'\n\n";
 
-        if (nm.empty()) {
+        if (msg.name.empty()) {
             throw std::length_error("Name can not be empty!\n");
         }
 
-        if (txt.empty()) {
+        if (msg.text.empty()) {
             throw std::length_error("Message can not be empty!\n");
         }
 
-        if (nm.size() > NAME_MAXLEN) {
+        if (msg.name.size() > NAME_MAXLEN) {
             throw std::length_error("Name can not be longer than NAME_MAXLEN");
         }
 
         std::vector<uint8_t> buff;
 
-        if (txt.size() > MSG_MAXLEN) {
-            packMultStrData(nm, txt, buff);
+        if (msg.text.size() > MSG_MAXLEN) {
+            packMultStrData(msg.name, msg.text, buff);
             return buff;
 
         } else {
-            packdata(nm, txt, buff);
+            packData(msg.name, msg.text, buff);
             return buff;
         }
     }
