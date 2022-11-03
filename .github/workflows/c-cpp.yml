@@ -16,4 +16,6 @@ jobs:
     - name: install boost
       run: sudo apt install libboost-dev
     - name: compile
-      run: g++ -std=c++17 Test.cpp messenger.cpp
+      run: g++ -std=c++17 Test.cpp messenger.cpp -o Test
+    - name: run
+      run: ./Test
